@@ -13,7 +13,7 @@ const ticketRoutes = require('./routes/tickets')
 app.use('/', ticketRoutes)
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error('Error:', err.message)
   res.status(500).send('Internal Server Error')
 })
