@@ -58,7 +58,7 @@ async function getTickets() {
     `)
     return tickets
   } catch (error) {
-    console.error('Error fetching tickets:', error.message)
+    console.error('Error fetching tickets:', error); // Log full error object
     throw new Error('Failed to fetch tickets')
   } finally {
     conn.release()
