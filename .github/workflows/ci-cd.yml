@@ -1,0 +1,72 @@
+name: CI/CD Pipeline
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MYSQL_ROOT_PASSWORD: pass
+          MYSQL_DATABASE: ticketing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - name: Wait for MariaDB
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+            sleep 1
+          done
+      - name: Setup database
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -ppass ticketing < fixtures/schema.sql
+          npm run seed
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: pass
+          DB_NAME: ticketing
+          ADMIN_USER: admin
+          ADMIN_PASSWORD: pass
+      - name: Run unit tests
+        run: npm test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: pass
+          DB_NAME: ticketing
+          ADMIN_USER: admin
+          ADMIN_PASSWORD: pass
+
+      - name: Start application for Cypress tests
+        run: |
+          npm start &
+          sleep 10
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: pass
+          DB_NAME: ticketing
+          ADMIN_USER: admin
+          ADMIN_PASSWORD: pass
+      - name: Run Cypress E2E tests
+        run: npm run cypress:run
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: pass
+          DB_NAME: ticketing
+          ADMIN_USER: admin
+          ADMIN_PASSWORD: pass
+          CYPRESS_AUTH_USERNAME: admin
+          CYPRESS_AUTH_PASSWORD: pass
+      - name: Build Docker image
+        run: docker-compose build 

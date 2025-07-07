@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS types (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tickets (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  type_id INT,
+  email VARCHAR(128),
+  message TEXT,
+  FOREIGN KEY (type_id) REFERENCES types(id)
+); 
