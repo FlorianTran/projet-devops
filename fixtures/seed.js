@@ -14,8 +14,8 @@ async function seed() {
     console.log('Creating tables...')
     await conn.query('DROP TABLE IF EXISTS tickets')
     await conn.query('DROP TABLE IF EXISTS types')
-    await conn.query('CREATE TABLE types (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(32) NOT NULL)')
-    await conn.query('CREATE TABLE tickets (id INT PRIMARY KEY AUTO_INCREMENT, type_id INT, email VARCHAR(128), message TEXT, FOREIGN KEY (type_id) REFERENCES types(id))')
+    await conn.query('CREATE TABLE types (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(32) NOT NULL UNIQUE)')
+    await conn.query('CREATE TABLE tickets (id INT PRIMARY KEY AUTO_INCREMENT, type_id INT NOT NULL, email VARCHAR(128) NOT NULL, message TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE RESTRICT)')
     
     console.log('Inserting types...')
     await conn.query('INSERT INTO types (name) VALUES ("bug"), ("question"), ("suggestion")')
