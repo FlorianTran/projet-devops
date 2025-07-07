@@ -167,3 +167,57 @@ For authentication tests, you can set these environment variables:
 export CYPRESS_AUTH_USERNAME=admin
 export CYPRESS_AUTH_PASSWORD=pass
 ```
+
+## CI/CD Pipeline
+
+The project includes a complete GitHub Actions CI/CD pipeline that:
+
+1. **Tests**: Runs unit tests and E2E tests
+2. **Builds**: Creates Docker image with multi-stage build
+3. **Pushes**: Uploads image to Docker Hub
+4. **Deploys**: Deploys to remote server via SSH
+
+### Required GitHub Secrets
+
+To enable the complete CI/CD pipeline, configure these secrets in your GitHub repository:
+
+#### Docker Registry Secrets
+- `DOCKER_USERNAME` - Your Docker Hub username
+- `DOCKER_PASSWORD` - Your Docker Hub password/token
+
+#### Server Deployment Secrets
+- `SERVER_HOST` - IP address or hostname of your deployment server
+- `SERVER_USER` - SSH username for the server
+- `SSH_PRIVATE_KEY` - Private SSH key for server access
+
+#### Database Secrets (for deployment)
+- `DB_HOST` - Database host for production
+- `DB_USER` - Database username for production
+- `DB_PASSWORD` - Database password for production
+- `DB_NAME` - Database name for production
+- `ADMIN_USER` - Admin username for production
+- `ADMIN_PASSWORD` - Admin password for production
+
+### Pipeline Steps
+
+1. **Test Phase**:
+   - Install dependencies
+   - Run linting
+   - Start MariaDB container
+   - Setup database schema
+   - Run unit tests
+   - Run Cypress E2E tests
+
+2. **Build & Deploy Phase** (only on main branch):
+   - Build Docker image with Buildx
+   - Push to Docker Hub
+   - Deploy to server via SSH
+   - Update running container
+
+### Deployment Server Requirements
+
+Your deployment server should have:
+- Docker installed
+- SSH access configured
+- Port 3000 available (or configure reverse proxy)
+- MariaDB/MySQL server running
