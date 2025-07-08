@@ -5,7 +5,8 @@ RUN npm ci --only=production
 
 FROM node:18-alpine
 WORKDIR /app
-RUN apk add --no-cache mysql-client
+# Install mariadb-client for health checks
+RUN apk add --no-cache mariadb-client
 COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
 COPY src ./src

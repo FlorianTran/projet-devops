@@ -110,7 +110,7 @@ jobs:
             docker stop ticketing-app || true
             docker rm ticketing-app || true
             
-            # Start new container (auto-seeds on startup)
+            # Start new container
             docker run -d \
               --name ticketing-app \
               --restart unless-stopped \

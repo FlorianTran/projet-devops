@@ -2,7 +2,7 @@
 
 # Wait for database to be ready
 echo "Waiting for database..."
-while ! mysqladmin ping -h"$DB_HOST" -P"3306" --silent; do
+while ! mariadb-admin ping -h"$DB_HOST" -P"3306" --silent; do
   sleep 1
 done
 
