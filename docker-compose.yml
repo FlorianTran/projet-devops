@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   app:
-    build: .
+    image: PLACEHOLDER_IMAGE
     ports:
       - "3000:3000"
     environment:
@@ -9,12 +9,25 @@ services:
       - DB_USER=root
       - DB_PASSWORD=pass
       - DB_NAME=ticketing
-      - ADMIN_USER=admin
-      - ADMIN_PASSWORD=pass
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-pass}
       - PORT=3000
     depends_on:
       - mariadb
+      - seed
     restart: unless-stopped
+
+  seed:
+    image: PLACEHOLDER_IMAGE
+    environment:
+      - DB_HOST=mariadb
+      - DB_USER=root
+      - DB_PASSWORD=pass
+      - DB_NAME=ticketing
+    depends_on:
+      - mariadb
+    command: node fixtures/seed.js
+    restart: "no"
 
   mariadb:
     image: mariadb:10.5
@@ -22,7 +35,7 @@ services:
       - MYSQL_ROOT_PASSWORD=pass
       - MYSQL_DATABASE=ticketing
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
     restart: unless-stopped
