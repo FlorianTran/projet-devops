@@ -15,7 +15,6 @@ async function showTicketForm(req, res) {
 async function createTicket(req, res) {
   const { type_id, email, message } = req.body
   
-  // Enhanced validation
   if (!type_id || !email || !message) {
     return res.status(400).json({ 
       error: 'Missing required fields',
@@ -23,13 +22,11 @@ async function createTicket(req, res) {
     })
   }
   
-  // Email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: 'Invalid email format' })
   }
   
-  // Message length validation
   if (message.trim().length < 10) {
     return res.status(400).json({ error: 'Message must be at least 10 characters long' })
   }

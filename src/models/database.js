@@ -28,7 +28,6 @@ async function getTypes() {
 async function createTicket(typeId, email, message) {
   const conn = await pool.getConnection()
   try {
-    // Validate type_id exists
     const types = await conn.query('SELECT id FROM types WHERE id = ?', [typeId])
     if (types.length === 0) {
       throw new Error('Invalid ticket type')
@@ -58,14 +57,13 @@ async function getTickets() {
     `)
     return tickets
   } catch (error) {
-    console.error('Error fetching tickets:', error); // Log full error object
+    console.error('Error fetching tickets:', error);
     throw new Error('Failed to fetch tickets')
   } finally {
     conn.release()
   }
 }
 
-// Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('Shutting down database connections...')
   await pool.end()

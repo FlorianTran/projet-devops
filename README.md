@@ -161,7 +161,7 @@ make cypress-run
 
 ### Test Environment Variables
 
-For authentication tests, you can set these environment variables:
+For authentication tests, set these environment variables:
 
 ```bash
 export CYPRESS_AUTH_USERNAME=admin
@@ -179,7 +179,7 @@ The project includes a complete GitHub Actions CI/CD pipeline that:
 
 ### Required GitHub Secrets
 
-To enable the complete CI/CD pipeline, configure these secrets in your GitHub repository:
+Configure these secrets in your GitHub repository:
 
 #### Docker Registry Secrets
 - `DOCKER_USERNAME` - Your Docker Hub username
