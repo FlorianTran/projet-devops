@@ -12,10 +12,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-pass}
       - PORT=3000
     depends_on:
-      mariadb:
-        condition: service_healthy
-      seed:
-        condition: service_completed_successfully
+      - mariadb
+      - seed
     restart: unless-stopped
 
   seed:
@@ -26,9 +24,8 @@ services:
       - DB_PASSWORD=pass
       - DB_NAME=ticketing
     depends_on:
-      mariadb:
-        condition: service_healthy
-    command: sh -c "sleep 10 && node fixtures/seed.js"
+      - mariadb
+    command: sh -c "sleep 15 && node fixtures/seed.js"
     restart: "no"
 
   mariadb:
@@ -41,10 +38,6 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
 volumes:
   mariadb_data: 

@@ -102,7 +102,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "docker-compose.yml,deploy.sh"
+          source: "deploy-simple.sh"
           target: "/home/${{ secrets.SERVER_USER }}"
 
       - name: Deploy to server
@@ -116,16 +116,11 @@ jobs:
             # Pull latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
             
-            # Stop existing services and clean up
-            docker compose down || true
-            docker stop ticketing-app || true
-            docker rm ticketing-app || true
+            # Make script executable
+            chmod +x deploy-simple.sh
             
-            # Kill any process using port 3000
-            sudo fuser -k 3000/tcp || true
-            
-            # Update docker-compose.yml with the new image
-            sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/ticketing:latest|" docker-compose.yml
-            
-            # Start services with docker compose
-            ADMIN_USER=${{ secrets.ADMIN_USER }} ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} docker compose up -d 
+            # Run simple deployment script
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} \
+            ADMIN_USER=${{ secrets.ADMIN_USER }} \
+            ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
+            ./deploy-simple.sh
