@@ -27,9 +27,7 @@ async function createTicket(req, res) {
     return res.status(400).json({ error: 'Invalid email format' })
   }
   
-  if (message.trim().length < 10) {
-    return res.status(400).json({ error: 'Message must be at least 10 characters long' })
-  }
+
   
   try {
     await db.createTicket(type_id, email, message.trim())
