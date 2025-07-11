@@ -117,17 +117,17 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
             
             # Stop existing containers
-            docker-compose -f docker-compose.prod.yml down || true
+            docker compose -f docker-compose.prod.yml down || true
             
             # Deploy using production compose file
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} \
             DB_PASSWORD=pass \
             ADMIN_USER=${{ secrets.ADMIN_USER }} \
             ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
-            docker-compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d
             
             # Wait for deployment to complete
             sleep 10
             
             # Check deployment status
-            docker-compose -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.prod.yml ps
