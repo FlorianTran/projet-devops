@@ -95,14 +95,14 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
       
-      - name: Copy files to server
+      - name: Copy production compose file to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "deploy-simple.sh"
+          source: "docker-compose.prod.yml"
           target: "/home/${{ secrets.SERVER_USER }}"
 
       - name: Deploy to server
@@ -116,11 +116,18 @@ jobs:
             # Pull latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
             
-            # Make script executable
-            chmod +x deploy-simple.sh
+            # Stop existing containers
+            docker-compose -f docker-compose.prod.yml down || true
             
-            # Run simple deployment script
+            # Deploy using production compose file
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} \
+            DB_PASSWORD=pass \
             ADMIN_USER=${{ secrets.ADMIN_USER }} \
             ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
-            ./deploy-simple.sh
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Wait for deployment to complete
+            sleep 10
+            
+            # Check deployment status
+            docker-compose -f docker-compose.prod.yml ps

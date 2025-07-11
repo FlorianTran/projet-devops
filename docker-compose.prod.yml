@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  app:
+    image: ${DOCKER_USERNAME}/ticketing:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=mariadb
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - DB_NAME=ticketing
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-pass}
+      - PORT=3000
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  seed:
+    image: ${DOCKER_USERNAME}/ticketing:latest
+    environment:
+      - DB_HOST=mariadb
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - DB_NAME=ticketing
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    command: node fixtures/seed.js
+    restart: "no"
+
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-pass}
+      - MYSQL_DATABASE=ticketing
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mariadb_data: 
