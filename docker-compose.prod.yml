@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ${DOCKER_USERNAME}/ticketing:latest
+    image: ${DOCKER_USERNAME}/ticketing:${IMAGE_TAG:-latest}
     ports:
       - "3000:3000"
     environment:
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   seed:
-    image: ${DOCKER_USERNAME}/ticketing:latest
+    image: ${DOCKER_USERNAME}/ticketing:${IMAGE_TAG:-latest}
     environment:
       - DB_HOST=mariadb
       - DB_USER=root

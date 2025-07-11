@@ -90,7 +90,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
+            ${{ secrets.DOCKER_USERNAME }}/ticketing:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
@@ -115,14 +117,15 @@ jobs:
           script: |
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-            # Pull latest image
-            docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing:latest
+            # Pull specific version image
+            docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing:${{ github.sha }}
             
             # Stop existing containers
             docker compose -f docker-compose.prod.yml down || true
             
-            # Deploy using production compose file
+            # Deploy using production compose file with specific version
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} \
+            IMAGE_TAG=${{ github.sha }} \
             DB_PASSWORD=pass \
             ADMIN_USER=${{ secrets.ADMIN_USER }} \
             ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
