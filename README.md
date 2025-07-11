@@ -1,4 +1,5 @@
 # Ticketing App
+[![CI/CD Pipeline](https://github.com/FlorianTran/projet-devops/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/FlorianTran/projet-devops/actions/workflows/ci-cd.yml)
 
 Simple Express.js ticketing application with MariaDB.
 
